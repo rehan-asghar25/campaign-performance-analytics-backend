@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/rehan-asghar25/campaign-performance-analytics-backend#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "csv-parser": "^3.2.0",
+    "express": "^5.2.1",
+    "multer": "^2.0.2"
   }
 }
