@@ -16,3 +16,11 @@ async function uploadCampaignData(req, res) {
 module.exports = {
   uploadCampaignData
 };
+function getCampaignReport(req, res) {
+  const report = campaignService.getCampaignReport();
+  res.json(report);
+}
+module.exports = {
+  uploadCampaignData,
+  getCampaignReport
+};
