@@ -5,17 +5,16 @@ async function uploadCampaignData(req, res) {
     return res.status(400).json({ error: "CSV file is required" });
   }
 
+ try {
   const result = await campaignService.processCSV(req.file.buffer);
-
-  res.json({
-    message: "CSV processed successfully",
-    totalRecords: result.totalRecords
-  });
+  res.json({ message: "CSV processed successfully", ...result });
+} catch (err) {
+  res.status(400).json({ error: err.message });
 }
 
-module.exports = {
-  uploadCampaignData
-};
+}
+
+
 function getCampaignReport(req, res) {
   const report = campaignService.getCampaignReport();
   res.json(report);

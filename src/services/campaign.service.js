@@ -1,6 +1,11 @@
 const csv = require("csv-parser");
 const { Readable } = require("stream");
 
+const REQUIRED_COLUMNS = [
+  "EmailClicks",
+  "WebsiteVisits",
+  "Conversion"
+];
 let campaignsData = []; // in-memory storage
 
 function processCSV(buffer) {
@@ -10,17 +15,25 @@ function processCSV(buffer) {
     const stream = Readable.from(buffer.toString());
 
     stream
-     .pipe(csv())
+      .pipe(csv())
+      .on("headers", (headers) => {
+        for (const col of REQUIRED_COLUMNS) {
+          if (!headers.includes(col)) {
+            reject(new Error(`Missing required column: ${col}`));
+          }
+        }
+      })
       .on("data", (row) => {
         records.push(row);
       })
       .on("end", () => {
-        campaignsData = records; // overwrite old data
+        campaignsData = records;
         resolve({ totalRecords: records.length });
       })
       .on("error", reject);
   });
 }
+
 
 function getCampaignReport() {
   let totalClicks = 0;
