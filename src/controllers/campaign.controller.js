@@ -15,10 +15,25 @@ async function uploadCampaignData(req, res) {
 }
 
 
+const { reportToCSV } = require("../utils/reportCsvFormatter");
+
 function getCampaignReport(req, res) {
   const report = campaignService.getCampaignReport();
+ const { reportToCSV } = require("../utils/reportCsvFormatter");
+
+function getCampaignReport(req, res) {
+  const report = campaignService.getCampaignReport();
+
+  if (req.accepts("text/csv")) {
+    res.type("text/csv");
+    return res.send(reportToCSV(report));
+  }
+
   res.json(report);
 }
+
+}
+
 module.exports = {
   uploadCampaignData,
   getCampaignReport
