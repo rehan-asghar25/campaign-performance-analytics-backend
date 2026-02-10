@@ -2,27 +2,36 @@ const csv = require("csv-parser");
 const { Readable } = require("stream");
 
 const REQUIRED_COLUMNS = [
-  "EmailClicks",
   "WebsiteVisits",
   "Conversion"
 ];
+
+const OPTIONAL_COLUMNS = [
+  "EmailClicks"
+];
+
 let campaignsData = []; // in-memory storage
 
 function processCSV(buffer) {
   return new Promise((resolve, reject) => {
     const records = [];
 
-    const stream = Readable.from(buffer.toString());
+    const content = buffer.toString();
+const separator = content.includes('\t') ? '\t' : ',';
 
-    stream
-      .pipe(csv())
+const stream = Readable.from(content);
+
+stream
+  .pipe(csv({ separator }))
+
       .on("headers", (headers) => {
-        for (const col of REQUIRED_COLUMNS) {
-          if (!headers.includes(col)) {
-            reject(new Error(`Missing required column: ${col}`));
-          }
-        }
-      })
+  const missing = REQUIRED_COLUMNS.filter(col => !headers.includes(col));
+
+  if (missing.length > 0) {
+    reject(new Error(`Missing required column: ${missing.join(", ")}`));
+  }
+})
+
       .on("data", (row) => {
         records.push(row);
       })
@@ -56,7 +65,7 @@ totalImpressions += visits;
   const conversionRate =
   totalClicks > 0
     ? ((totalConversions / totalClicks) * 100).toFixed(2) 
-    : '0%';
+    : '0.00';
 
 
   return {
