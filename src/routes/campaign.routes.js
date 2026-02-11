@@ -13,5 +13,6 @@ router.post(
   campaignController.uploadCampaignData
 );
 
-module.exports = router;
+
 router.get("/campaigns/report", campaignController.getCampaignReport);
+module.exports = router;
