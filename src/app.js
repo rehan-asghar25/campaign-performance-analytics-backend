@@ -1,12 +1,12 @@
 const express = require("express");
-
 const app = express();
 
-// Global middleware
 app.use(express.json());
 
-// Routes
 const healthRoutes = require("./routes/health.routes");
+const campaignRoutes = require("./routes/campaign.routes");
+
 app.use("/", healthRoutes);
+app.use("/", campaignRoutes);
 
 module.exports = app;
