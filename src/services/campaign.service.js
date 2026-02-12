@@ -24,13 +24,26 @@ const stream = Readable.from(content);
 stream
   .pipe(csv({ separator }))
 
-      .on("headers", (headers) => {
-  const missing = REQUIRED_COLUMNS.filter(col => !headers.includes(col));
+     .on("headers", (headers) => {
+  // Validate required columns
+  const missingRequired = REQUIRED_COLUMNS.filter(
+    (col) => !headers.includes(col)
+  );
 
-  if (missing.length > 0) {
-    reject(new Error(`Missing required column: ${missing.join(", ")}`));
+  if (missingRequired.length > 0) {
+    return reject(
+      new Error(`Missing required column(s): ${missingRequired.join(", ")}`)
+    );
   }
+
+  // Identify available optional columns
+  const availableOptional = OPTIONAL_COLUMNS.filter(
+    (col) => headers.includes(col)
+  );
+
+  console.log("Optional columns detected:", availableOptional);
 })
+
 
       .on("data", (row) => {
         records.push(row);
@@ -50,8 +63,14 @@ function getCampaignReport() {
   let totalConversions = 0;
 
   campaignsData.forEach((row) => {
-   const clicks = Number((row.EmailClicks || '0').replace(/,/g, ''));
-const visits = Number((row.WebsiteVisits || '0').replace(/,/g, ''));
+   const clicks = row.EmailClicks
+  ? Number(row.EmailClicks.replace(/,/g, ""))
+  : 0;
+
+const visits = row.WebsiteVisits
+  ? Number(row.WebsiteVisits.replace(/,/g, ""))
+  : 0;
+
 
 totalClicks += clicks;
 totalImpressions += visits;
